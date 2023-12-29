@@ -46,7 +46,7 @@ pub fn rust_main() -> ! {
         println!("[kernel] Hello, world!");
         started = 1;
     } else {
-        while started == 0 {};
+        while started == 0 {}; //TODO: use WFI to offline minor harts
         println!("[kernel] minor hart {} booting...", hart_id);
         extern "C" {
             fn stext(); // begin addr of text segment
