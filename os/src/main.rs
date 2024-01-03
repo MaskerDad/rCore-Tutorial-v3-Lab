@@ -34,7 +34,8 @@ pub fn clear_bss() {
     (sbss as usize..ebss as usize).for_each(|a| unsafe { (a as *mut u8).write_volatile(0) });
 }
 
-pub static mut started: usize = 0;
+/// STARTED is used to distinguish major/minor hart
+pub static mut STARTED: usize = 0;
 
 /// the rust entry-point of os
 #[no_mangle]
@@ -44,9 +45,13 @@ pub fn rust_main() -> ! {
         logging::init();
         println!("[kernel] major hart {} booting...", hart_id);
         println!("[kernel] Hello, world!");
-        started = 1;
+        unsafe {
+            STARTED = 1;
+        }
     } else {
-        while started == 0 {}; //TODO: use WFI to offline minor harts
+        unsafe {
+            while STARTED == 0 {};
+        }
         println!("[kernel] minor hart {} booting...", hart_id);
         extern "C" {
             fn stext(); // begin addr of text segment
